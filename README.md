@@ -2,7 +2,7 @@
 
 ## Overview
 
-![Diagram](Diagram.png)
+Diagram
 
 ## AI Agent Flow Diagram
 

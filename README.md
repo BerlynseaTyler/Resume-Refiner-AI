@@ -2,7 +2,7 @@
 
 ## Overview
 
-![Diagram](Resume Refiner, Pre-Diagram.png)
+![Diagram](Resume_Refiner,_Pre-Diagram.png)
 
 ## AI Agent Flow Diagram
 

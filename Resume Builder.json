@@ -1,0 +1,223 @@
+{
+  "name": "Resume Builder",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Resume Builder AI",
+        "formDescription": "Please submit your resume, desired job description and email for the AI Agent to provide you with suggestion on how to update your resume for the specific job you are interested in applying for.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Your Resume",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Your Email",
+              "fieldType": "email",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Submit Resume for Improvement"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "922db869-a5d8-4e0e-8e6e-a5fc789888bc",
+      "name": "Resume Form",
+      "webhookId": "4a87c469-6bdf-4c06-b4b2-e7cea8b34ec8"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Resume Form').item.json.Job }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        384,
+        0
+      ],
+      "id": "28c35cae-ba87-407c-8c94-1ca02491bcdc",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Your_Resume",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1b884e94-f295-46d6-80bd-a5e2c55817c9",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert resume writer and career strategist with deep knowledge of what recruiters and applicant tracking systems (ATS) look for in competitive job applications.\n\nYour task is to analyze the user’s resume and compare it to the job posting they are interested in. Then, provide specific, actionable suggestions for improving the resume to better align with the job posting.\n\n## Instructions:\n\n1. Evaluate **content alignment**: Does the resume showcase relevant experience, skills, and achievements that match the job description?\n2. Identify **gaps or missed opportunities** in keywords, phrasing, or accomplishments that would make the resume stronger for this specific role.\n3. Recommend **structural or formatting improvements** if any sections are unclear, redundant, or poorly organized.\n4. Keep your tone helpful and professional, and do not rewrite the resume — only provide suggestions and guidance.\n\n---\n\n## User's Resume:\n{{ $('Extract from File').item.json.text }}\n\n---\n\n## Job Posting:\n{{ $('Resume Form').item.json.Job }}\n---\n\nReturn your response in the following format:\n\n**Summary of Fit:**  \n(A brief summary of how well the resume aligns with the job)\n\n**Suggestions for Improvement:**  \n- Bullet 1  \n- Bullet 2  \n- Bullet 3  \n(...continue as needed)\n\n**ATS Keyword Suggestions:**  \n(A list of suggested keywords or phrases to include, based on the job posting)\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        0
+      ],
+      "id": "3059ad54-5420-4fd5-b23c-2199b450d19d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-3.5-turbo"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        208
+      ],
+      "id": "1bdcce24-d555-47c3-962e-a50047eefbe0",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "A9rslRN4bvcOHNa9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        816,
+        208
+      ],
+      "id": "989d973f-850b-4bba-bc3c-0b705ce6f4a0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        0
+      ],
+      "id": "ca10d88b-b836-4939-ac7b-f005b131b90c",
+      "name": "Send a message",
+      "webhookId": "73eeb40f-8bc8-49e4-b3fd-7922cfb85741",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AqBmFPJConDmInWH",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Resume Form": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "80d7d817-8d44-49e1-aae3-fa76de9a1acc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08d22ece887aa21127defd41a4eba6ec68035cd0638ebaa1432b8964d0fb9e6a"
+  },
+  "id": "p6unWAU2Bv3weHRW",
+  "tags": []
+}

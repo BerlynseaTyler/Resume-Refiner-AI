@@ -21,6 +21,8 @@ The job posting is retrieved via an HTTP Request node through a direct URL.
 ![HTTP](https://github.com/BerlynseaTyler/Resume-Refiner-AI/blob/cdd324691628af870b9bc798d95de942da2bd53c/HTTP.png)
 
 Both the resume and job description are then passed to an AI agent node (e.g., OpenAI's GPT model) via the ChatGPT node. The AI is prompted to act as an expert resume writer, analyzing the alignment between the resume and the job requirements. It provides a summary of fit, tailored suggestions for improvement, and a list of relevant ATS (Applicant Tracking System) keywords. 
+![Prompt](https://github.com/BerlynseaTyler/Resume-Refiner-AI/blob/f5559963a5224171a9291e2cb3ee4ab6dd877a70/Prompt.png)
+
 
 The AI’s response is parsed into structured JSON using the Output Parser node, ensuring clean formatting and downstream usability. Finally, the feedback is compiled into an email and delivered to the user via the Send Email node. This end-to-end flow creates a seamless and scalable system for generating high-quality, AI-powered resume insights.
 
